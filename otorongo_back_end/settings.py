@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user_system.apps.UserSystemConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -76,11 +78,17 @@ WSGI_APPLICATION = 'otorongo_back_end.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'oto2',
+        'USER': 'root',
+        'PASSWORD': '19970924',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
+# Authentication
+AUTH_USER_MODEL = 'user_system.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -99,6 +107,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+      'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+       )
+   }
 
 
 # Internationalization
