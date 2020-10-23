@@ -22,3 +22,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'users'
 
+
+class Account(User):
+    accounts = models.OneToOneField(User, auto_created=True, on_delete=models.CASCADE, parent_link=True,
+                                    primary_key=True, serialize=False)
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    dni = models.CharField(max_length=10)
+    phone = models.CharField(max_length=15)
+    address = models.CharField(max_length=90)
+    maintenance = models.FloatField()
+
+    class Meta:
+        db_table = 'accounts'
