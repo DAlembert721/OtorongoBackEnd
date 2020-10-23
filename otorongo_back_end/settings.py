@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_system.apps.UserSystemConfig',
     'location_system.apps.LocationSystemConfig',
+    'shop_system.apps.ShopSystemConfig',
     'rest_framework',
 ]
 

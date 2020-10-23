@@ -33,8 +33,7 @@ class Account(User):
     dni = models.CharField(max_length=10)
     phone = models.CharField(max_length=15)
     address = models.CharField(max_length=90)
-    maintenance = models.FloatField()
-    district = models.ForeignKey(District, null=True, on_delete=models.PROTECT)
+    district = models.ForeignKey(District, null=True, on_delete=models.SET(None))
 
     class Meta:
         db_table = 'accounts'
