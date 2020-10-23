@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.base_user import AbstractBaseUser
+
+from location_system.models import District
 from .managers import UserManager
 
 
@@ -32,6 +34,7 @@ class Account(User):
     phone = models.CharField(max_length=15)
     address = models.CharField(max_length=90)
     maintenance = models.FloatField()
+    district = models.ForeignKey(District, null=True, on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'accounts'

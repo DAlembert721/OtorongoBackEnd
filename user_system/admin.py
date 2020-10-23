@@ -30,3 +30,4 @@ class UserAdmin(BaseUserAdmin):
 # Register your models here.
 admin.site.register(User, UserAdmin)
 admin.site.register(Account)
+
