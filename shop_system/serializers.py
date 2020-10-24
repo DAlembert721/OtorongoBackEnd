@@ -11,6 +11,7 @@ class RateSerializer(serializers.ModelSerializer):
 
 class ClientSerializer(serializers.ModelSerializer):
     rate_name = serializers.CharField(source='rate.name', read_only=True)
+    rate_id = serializers.IntegerField(write_only=True)
 
     def create(self, validated_data):
         rate = Rate.objects.get(id=validated_data["rate_id"])
@@ -23,10 +24,7 @@ class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
         fields = ('last_name', 'first_name', 'dni', 'phone', 'address', 'credit_total', 'credit_balance', 'rate_value',
-                  'quotation', 'billing_closing', 'payday', 'maintenance', 'rate_name', 'rate_id',)
-        extra_kwargs = {
-            'rate_id': {'write_only': True}
-        }
+                  'quotation', 'billing_closing', 'payday', 'maintenance', 'rate_name', 'rate_id')
 
 
 class OperationSerializer(serializers.ModelSerializer):

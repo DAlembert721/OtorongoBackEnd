@@ -22,7 +22,7 @@ class Client(models.Model):
     phone = models.CharField(max_length=15)
     address = models.CharField(max_length=90)
     credit_total = models.FloatField(default=0)
-    credit_balance = models.FloatField()
+    credit_balance = models.FloatField(default=0)
     rate_value = models.FloatField()
     quotation = models.IntegerField(default=1)
     billing_closing = models.DateField()
