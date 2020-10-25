@@ -75,7 +75,7 @@ def client_operations_list(request, client_id):
         if serializer.is_valid():
             serializer.save(client_id=client_id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -102,3 +102,30 @@ def client_operations_detail(request, client_id, operation_id):
     elif request.method == 'DELETE':
         operation.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET', 'POST'])
+def operation_products_list(request, operation_id, product_id):
+    try:
+        operation = Operation.objects.get(id=operation_id)
+    except Operation.DoesNotExist:
+        return Http404
+    try:
+        Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Http404
+
+    if request.method == 'POST':
+        serializer = OperationProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(operation_id=operation_id, product_id=product_id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        operation_products = OperationProduct.objects.filter(operation_id=operation_id)
+        serializer = OperationProductSerializer(operation_products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+

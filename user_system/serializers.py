@@ -20,5 +20,5 @@ class UserSerializer(serializers.ModelSerializer):
 class AccountSerializer(UserSerializer):
     class Meta:
         model = Account
-        fields = UserSerializer.Meta.fields + ('first_name', 'last_name', 'dni', 'phone', 'address', 'maintenance',)
+        fields = UserSerializer.Meta.fields + ('first_name', 'last_name', 'dni', 'phone', 'address',)
         extra_kwargs = UserSerializer.Meta.extra_kwargs.copy()

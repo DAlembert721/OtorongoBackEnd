@@ -1,6 +1,6 @@
 from rest_framework import serializers
-
 from shop_system.models import *
+from .finance_operations import *
 
 
 class RateSerializer(serializers.ModelSerializer):
@@ -39,7 +39,7 @@ class OperationSerializer(serializers.ModelSerializer):
         fields = ('operation_date', 'state', 'delivery',)
 
 
-class Product(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         account = Account.objects.get(id=validated_data["account_id"])
         validated_data["account"] = account
@@ -49,3 +49,25 @@ class Product(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('name', 'unit_cost')
+
+
+class OperationProductSerializer(serializers.ModelSerializer):
+    product_name = serializers.CharField(source='product.name', read_only=True)
+    total = serializers.SerializerMethodField('calculate_total', read_only=True)
+
+    @staticmethod
+    def calculate_total(self):
+        total = self.product.unit_cost * self.quantity
+        return total
+
+    def create(self, validated_data):
+        product = Product.objects.get(id=validated_data["product_id"])
+        operation = Operation.objects.get(id=validated_data["operation_id"])
+        validated_data["product"] = product
+        validated_data["operation"] = operation
+        operation_product = OperationProduct.objects.create(**validated_data)
+        return operation_product
+
+    class Meta:
+        model = OperationProduct
+        fields = ('product_name', 'quantity', 'total',)

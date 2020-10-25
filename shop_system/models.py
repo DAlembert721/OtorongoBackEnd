@@ -38,7 +38,8 @@ class Operation(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     operation_date = models.DateField()
     state = models.BooleanField(default=0)
-    delivery = models.FloatField()
+    mount = models.FloatField(default=0)
+    delivery = models.FloatField(default=0)
 
     class Meta:
         db_table = 'operations'
@@ -48,7 +49,18 @@ class Product(models.Model):
     name = models.CharField(max_length=100, unique=True)
     unit_cost = models.FloatField()
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    operations = models.ManyToManyField(Operation, related_name='products')
+    operations = models.ManyToManyField(Operation, related_name='products', through='OperationProduct',
+                                        symmetrical=False)
 
     class Meta:
         db_table = 'products'
+
+
+class OperationProduct(models.Model):
+    operation = models.ForeignKey(Operation, on_delete=models.CASCADE, related_name='operation_id')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_id')
+    quantity = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'operations_products'
+

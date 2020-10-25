@@ -116,7 +116,7 @@ REST_FRAMEWORK = {
        )
    }
 
-
+REST_FRAMEWORK_EXPIRY_TIME = 12
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
