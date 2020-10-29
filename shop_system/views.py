@@ -107,7 +107,7 @@ def client_operations_detail(request, client_id, operation_id):
 @api_view(['GET', 'POST'])
 def operation_products_list(request, operation_id, product_id):
     try:
-        operation = Operation.objects.get(id=operation_id)
+        Operation.objects.get(id=operation_id)
     except Operation.DoesNotExist:
         return Http404
     try:
@@ -127,5 +127,30 @@ def operation_products_list(request, operation_id, product_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
+def operation_products_detail(request, operation_id, product_id):
+    try:
+        Operation.objects.get(id=operation_id)
+    except Operation.DoesNotExist:
+        return Http404
+    try:
+        Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Http404
+    try:
+        operation_product = OperationProduct.objects.get(operation_id=operation_id, product_id=product_id)
+    except OperationProduct.DoesNotExist:
+        return Http404
 
-
+    if request.method == 'PUT':
+        serializer = OperationProductSerializer(operation_product, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        serializer = OperationProductSerializer(operation_product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    elif request.method == 'DELETE':
+        operation_product.delete()
+        return Response(status=status.HTTP_200_OK)
