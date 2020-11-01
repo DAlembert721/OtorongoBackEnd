@@ -27,10 +27,22 @@ class ClientSerializer(serializers.ModelSerializer):
                   'quotation', 'billing_closing', 'payday', 'maintenance', 'rate_name', 'rate_id')
 
 
-class OperationSerializer(serializers.ModelSerializer):
+class BillSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         client = Client.objects.get(id=validated_data["client_id"])
         validated_data["client"] = client
+        bill = Bill.objects.create(**validated_data)
+        return bill
+
+    class Meta:
+        model = Bill
+        fields = ('date', 'total', 'balance',)
+
+
+class OperationSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        bill = Bill.objects.get(id=validated_data["bill_id"])
+        validated_data["bill"] = bill
         operation = Operation.objects.create(**validated_data)
         return operation
 

@@ -12,5 +12,6 @@ urlpatterns = [
     path('users/', users_list, name='user_list'),
     path('users/<int:user_id>/', users_detail, name='user_detail'),
     path('accounts/', accounts_list, name='account_list'),
-    path('accounts/<int:account_id>', account_detail, name='account_detail'),
+    path('accounts/<int:account_id>/', account_detail, name='account_detail'),
+    path('accounts/email=<str:email>/', account_email_detail, name='email_detail')
 ]

@@ -34,8 +34,18 @@ class Client(models.Model):
         db_table = 'clients'
 
 
-class Operation(models.Model):
+class Bill(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    date = models.DateField()
+    total = models.FloatField(default=0)
+    balance = models.FloatField(default=0)
+
+    class Meta:
+        db_table = 'bills'
+
+
+class Operation(models.Model):
+    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
     operation_date = models.DateField()
     state = models.BooleanField(default=0)
     mount = models.FloatField(default=0)
@@ -63,4 +73,3 @@ class OperationProduct(models.Model):
 
     class Meta:
         db_table = 'operations_products'
-

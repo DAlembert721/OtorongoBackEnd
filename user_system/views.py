@@ -80,3 +80,16 @@ def account_detail(request, account_id):
     elif request.method == 'DELETE':
         account.delete()
         return Response(status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def account_email_detail(request, email):
+    try:
+        account = Account.objects.get(email=email)
+    except Account.DoesNotExist:
+        return Http404
+
+    if request.method == 'GET':
+        serializer = AccountSerializer(account)
+        return Response(serializer.data, status=status.HTTP_302_FOUND)
