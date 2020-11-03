@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from shop_system.models import *
-import shop_system.finance_operations as fo
-from shop_system.observer import update_operation_mount
+from shop_system.observer import *
 
 
 class RateSerializer(serializers.ModelSerializer):
