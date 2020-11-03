@@ -12,6 +12,7 @@ urlpatterns = [
     path('bills/<int:bill_id>/operations/<int:operation_id>/', bill_operations_detail, name="operation_detail"),
     path('operations/<int:operation_id>/products/<int:product_id>/', operation_products_list,
          name="operation_products"),
+    path('operations-products/<int:operation_product_id>/', operation_products_detail, name="operation_product"),
     path('accounts/<int:account_id>/products/', products_list, name="products_list"),
     path('accounts/<int:account_id>/products/<int:product_id>/', products_detail, name="products_detail"),
 ]

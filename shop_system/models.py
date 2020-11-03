@@ -22,7 +22,6 @@ class Client(models.Model):
     phone = models.CharField(max_length=15)
     address = models.CharField(max_length=90)
     credit_total = models.FloatField(default=0)
-    credit_balance = models.FloatField(default=0)
     rate_value = models.FloatField()
     quotation = models.IntegerField(default=1)
     billing_closing = models.DateField()
@@ -37,8 +36,6 @@ class Client(models.Model):
 class Bill(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date = models.DateField()
-    total = models.FloatField(default=0)
-    balance = models.FloatField(default=0)
 
     class Meta:
         db_table = 'bills'
@@ -48,8 +45,8 @@ class Operation(models.Model):
     bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
     operation_date = models.DateField()
     state = models.BooleanField(default=0)
-    mount = models.FloatField(default=0)
     delivery = models.FloatField(default=0)
+    close = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'operations'

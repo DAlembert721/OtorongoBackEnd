@@ -1,4 +1,5 @@
-from shop_system.models import Bill
+from shop_system.models import Bill, Operation
+import shop_system.finance_operations as  fo
 import datetime
 
 
@@ -14,3 +15,21 @@ def bills_generator(clients):
             continue
         continue
     return
+
+
+def update_bill_total(operation, bill_id):
+    future = operation['future']
+    bill = Bill.objects.get(id=bill_id)
+    bill.total += future
+    bill.save()
+
+
+def update_operation_mount(item, operation_id):
+    operation = Operation.objects.get(id=operation_id)
+    operation.mount += item.quantity * item.product.unit_cost
+    operation.save()
+    if operation.close:
+        future = fo.calculate_operation_future(operation)
+        bill = operation.bill
+        bill.total += future
+        bill.save()

@@ -174,17 +174,9 @@ def operation_products_list(request, operation_id, product_id):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def operation_products_detail(request, operation_id, product_id):
+def operation_products_detail(request, operation_product_id):
     try:
-        Operation.objects.get(id=operation_id)
-    except Operation.DoesNotExist:
-        return Http404
-    try:
-        Product.objects.get(id=product_id)
-    except Product.DoesNotExist:
-        return Http404
-    try:
-        operation_product = OperationProduct.objects.get(operation_id=operation_id, product_id=product_id)
+        operation_product = OperationProduct.objects.get(id=operation_product_id)
     except OperationProduct.DoesNotExist:
         return Http404
 
