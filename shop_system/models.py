@@ -55,6 +55,7 @@ class Operation(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, unique=True)
     unit_cost = models.FloatField()
+    measurement = models.CharField(max_length=10)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     operations = models.ManyToManyField(Operation, related_name='products', through='OperationProduct',
                                         symmetrical=False)

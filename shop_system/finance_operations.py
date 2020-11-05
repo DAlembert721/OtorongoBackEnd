@@ -6,7 +6,7 @@ from shop_system.models import Operation, OperationProduct, Product
 
 def calculate_operation_future(operation):
     products = OperationProduct.objects.filter(operation__id=operation.id)
-    c = 0
+    c = operation.delivery
     for product in products:
         item = Product.objects.get(id=product.product_id)
         unit_cost = item.unit_cost
@@ -40,3 +40,13 @@ def calculate_payed_mount(bill):
         if operation.state and operation.close:
             total += calculate_operation_future(operation)
     return total
+
+
+def credit_validator(operation):
+    total = calculate_bill_future(operation.bill)
+    credit = operation.bill.client.credit_total
+    if total > credit:
+        operation.delete()
+        return str(f'Credit line was exceeded by: {(total - credit)}')
+    else:
+        return None

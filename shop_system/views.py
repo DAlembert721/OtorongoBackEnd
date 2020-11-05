@@ -150,8 +150,8 @@ def bill_operations_detail(request, bill_id, operation_id):
         return Response(status=status.HTTP_200_OK)
 
 
-@api_view(['GET', 'POST'])
-def operation_products_list(request, operation_id, product_id):
+@api_view(['POST'])
+def operation_products_create(request, operation_id, product_id):
     try:
         Operation.objects.get(id=operation_id)
     except Operation.DoesNotExist:
@@ -165,9 +165,20 @@ def operation_products_list(request, operation_id, product_id):
         serializer = OperationProductSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(operation_id=operation_id, product_id=product_id)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            if not isinstance(serializer.data["total"], str):
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'GET':
+
+
+@api_view(['GET'])
+def operation_products_list(request, operation_id, ):
+    try:
+        Operation.objects.get(id=operation_id)
+    except Operation.DoesNotExist:
+        return Http404
+    if request.method == 'GET':
         operation_products = OperationProduct.objects.filter(operation__id=operation_id)
         serializer = OperationProductSerializer(operation_products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from shop_system.models import *
 from shop_system.observer import *
+from shop_system.finance_operations import *
 
 
 class RateSerializer(serializers.ModelSerializer):
@@ -80,19 +81,23 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('id', 'name', 'unit_cost')
+        fields = ('id', 'name', 'unit_cost', 'measurement')
 
 
 class OperationProductSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
     unit_cost = serializers.FloatField(source='product.unit_cost', read_only=True)
+    measurement = serializers.CharField(source='product.measurement', read_only=True)
     total = serializers.SerializerMethodField('calculate_total', read_only=True)
     close = serializers.BooleanField(default=False, required=False, write_only=True)
 
     @staticmethod
     def calculate_total(self):
-        total = self.product.unit_cost * self.quantity
-        return total
+        if isinstance(self, str):
+            return self
+        else:
+            total = self.product.unit_cost * self.quantity
+            return total
 
     def create(self, validated_data):
         operation = Operation.objects.get(id=validated_data["operation_id"])
@@ -104,10 +109,13 @@ class OperationProductSerializer(serializers.ModelSerializer):
             operation_product = OperationProduct.objects.create(**validated_data)
             operation.close = close
             operation.save()
+            response = credit_validator(operation)
+            if isinstance(response, str):
+                return response
             return operation_product
         else:
-            return Exception
+            return "The operation is already close"
 
     class Meta:
         model = OperationProduct
-        fields = ('id', 'product_name', 'unit_cost', 'quantity', 'total', 'close')
+        fields = ('id', 'product_name', 'unit_cost', 'quantity', 'measurement', 'total', 'close')
