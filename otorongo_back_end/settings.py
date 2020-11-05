@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
-
+import datetime
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -37,6 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'user_system.apps.UserSystemConfig',
+    'location_system.apps.LocationSystemConfig',
+    'shop_system.apps.ShopSystemConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -76,11 +80,17 @@ WSGI_APPLICATION = 'otorongo_back_end.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'oto2',
+        'USER': 'root',
+        'PASSWORD': '19970924',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 
+# Authentication
+AUTH_USER_MODEL = 'user_system.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -100,7 +110,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+      'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework_simplejwt.authentication.JWTAuthentication',
+       )
+   }
 
+# REST_FRAMEWORK_EXPIRY_TIME = 12
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(hours=5),
+    'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=20),
+    'ROTATE_REFRESH_TOKENS': False,
+}
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
