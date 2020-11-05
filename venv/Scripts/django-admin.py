@@ -1,4 +1,4 @@
-#!E:\202002\finanzas\formulas en code\otorongo_back_end\venv\Scripts\python.exe
+#!e:\202002\finanzas\formulas en code\otorongo_back_end\venv\scripts\python.exe
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
