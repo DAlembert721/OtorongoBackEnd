@@ -50,13 +50,13 @@ def account_clients_detail(request, account_id, client_id):
 
     if request.method == 'GET':
         serializer = ClientSerializer(client)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = ClientSerializer(client, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         client.delete()
         return Response(status=status.HTTP_200_OK)
@@ -94,13 +94,13 @@ def client_bills_detail(request, client_id, bill_id):
 
     if request.method == 'GET':
         serializer = BillSerializer(bill)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = BillSerializer(bill, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         bill.delete()
         return Response(status=status.HTTP_200_OK)
@@ -138,13 +138,13 @@ def bill_operations_detail(request, bill_id, operation_id):
 
     if request.method == 'GET':
         serializer = OperationSerializer(operation)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = OperationSerializer(operation, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         operation.delete()
         return Response(status=status.HTTP_200_OK)
@@ -237,13 +237,13 @@ def products_detail(request, account_id, product_id):
 
     if request.method == 'GET':
         serializer = ProductSerializer(product)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = ProductSerializer(product, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'DELETE':
         product.delete()
         return Response(status=status.HTTP_200_OK)
