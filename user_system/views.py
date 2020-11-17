@@ -70,7 +70,7 @@ def account_detail(request, account_id):
 
     if request.method == 'GET':
         serializer = AccountSerializer(account)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
         serializer = AccountSerializer(account, data=request.data)
         if serializer.is_valid():
@@ -92,4 +92,4 @@ def account_email_detail(request, email):
 
     if request.method == 'GET':
         serializer = AccountSerializer(account)
-        return Response(serializer.data, status=status.HTTP_302_FOUND)
+        return Response(serializer.data, status=status.HTTP_200_OK)
