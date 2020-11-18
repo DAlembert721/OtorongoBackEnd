@@ -10,7 +10,7 @@ def bills_generator(clients):
         try:
             Bill.objects.get(date=date)
         except Bill.DoesNotExist:
-            bill = Bill(client=client, date=date, total=client.maintenance)
+            bill = Bill(client=client, date=date)
             bill.save()
             continue
         continue
