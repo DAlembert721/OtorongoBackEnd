@@ -26,7 +26,6 @@ def account_clients_list(request, account_id):
     if request.method == 'GET':
         clients = Client.objects.filter(account__id=account_id)
         serializer = ClientSerializer(clients, many=True)
-        bills_generator(clients)
         return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'POST':
         serializer = ClientSerializer(data=request.data)
@@ -63,72 +62,28 @@ def account_clients_detail(request, account_id, client_id):
 
 
 @api_view(['GET', 'POST'])
-def client_bills_list(request, client_id):
+def client_operations_list(request, client_id):
     try:
         Client.objects.get(id=client_id)
     except Client.DoesNotExist:
         return Http404
     if request.method == 'GET':
-        bills = Bill.objects.filter(client__id=client_id)
-        serializer = BillSerializer(bills, many=True)
+        operations = Operation.objects.filter(client__id=client_id)
+        serializer = OperationSerializer(operations, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'POST':
-        serializer = BillSerializer(data=request.data)
+        serializer = OperationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(client_id=client_id)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def client_bills_detail(request, client_id, bill_id):
+@api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
+def client_operations_detail(request, client_id, operation_id):
     try:
         Client.objects.get(id=client_id)
     except Client.DoesNotExist:
-        return Http404
-
-    try:
-        bill = Bill.objects.get(id=bill_id)
-    except Bill.DoesNotExist:
-        return Http404
-
-    if request.method == 'GET':
-        serializer = BillSerializer(bill)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'PUT':
-        serializer = BillSerializer(bill, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'DELETE':
-        bill.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-@api_view(['GET', 'POST'])
-def bill_operations_list(request, bill_id):
-    try:
-        Bill.objects.get(id=bill_id)
-    except Bill.DoesNotExist:
-        return Http404
-    if request.method == 'GET':
-        operations = Operation.objects.filter(bill__id=bill_id)
-        serializer = OperationSerializer(operations, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    elif request.method == 'POST':
-        serializer = OperationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(bill_id=bill_id)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def bill_operations_detail(request, bill_id, operation_id):
-    try:
-        Bill.objects.get(id=bill_id)
-    except Bill.DoesNotExist:
         return Http404
 
     try:
@@ -148,6 +103,40 @@ def bill_operations_detail(request, bill_id, operation_id):
     elif request.method == 'DELETE':
         operation.delete()
         return Response(status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        serializer = OperationSerializer(operation, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def client_date_operations_detail(request, client_id, date):
+    try:
+        Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        return Http404
+
+    try:
+        operation = Operation.objects.get(date=date)
+    except Operation.DoesNotExist:
+        return Http404
+    if request.method == 'GET':
+        serializer = OperationSerializer(operation)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def client_state_operations_list(request, client_id, state):
+    try:
+        Client.objects.get(id=client_id)
+    except Client.DoesNotExist:
+        return Http404
+    if request.method == 'GET':
+        operations = Operation.objects.filter(client__id=client_id, state=state)
+        serializer = OperationSerializer(operations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])

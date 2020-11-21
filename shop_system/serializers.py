@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from shop_system.models import *
-from shop_system.observer import *
 from shop_system.finance_operations import *
+from shop_system.observer import *
 
 
 class RateSerializer(serializers.ModelSerializer):
@@ -11,49 +11,30 @@ class RateSerializer(serializers.ModelSerializer):
 
 
 class ClientSerializer(serializers.ModelSerializer):
-    rate_name = serializers.CharField(source='rate.name', read_only=True)
+    rate_name = serializers.SerializerMethodField('generate_rate_name', read_only=True)
     rate_id = serializers.IntegerField(write_only=True)
+
+    @staticmethod
+    def generate_rate_name(self):
+        return self.rate.type + ' ' + self.rate.name
 
     def create(self, validated_data):
         rate = Rate.objects.get(id=validated_data["rate_id"])
         validated_data["rate"] = rate
         account = Account.objects.get(id=validated_data["account_id"])
         validated_data["account"] = account
+        validated_data["open_date"] = datetime.date.today()
         client = Client.objects.create(**validated_data)
         return client
 
     class Meta:
         model = Client
-        fields = ('id', 'last_name', 'first_name', 'dni', 'phone', 'address', 'credit_total', 'rate_value',
-                  'quotation', 'billing_closing', 'payday', 'maintenance', 'rate_name', 'rate_id')
-
-
-class BillSerializer(serializers.ModelSerializer):
-    total = serializers.SerializerMethodField('calculate_future_call', read_only=True)
-    balance = serializers.SerializerMethodField('calculate_payed', read_only=True)
-
-    @staticmethod
-    def calculate_future_call(self):
-        s = fo.calculate_bill_future(self)
-        return s
-
-    @staticmethod
-    def calculate_payed(self):
-        s = fo.calculate_payed_mount(self)
-        return s
-
-    def create(self, validated_data):
-        client = Client.objects.get(id=validated_data["client_id"])
-        validated_data["client"] = client
-        bill = Bill.objects.create(**validated_data)
-        return bill
-
-    class Meta:
-        model = Bill
-        fields = ('id', 'date', 'total', 'balance',)
+        fields = ('id', 'last_name', 'first_name', 'dni', 'phone', 'address', 'credit_total', 'compensatory_value',
+                  'moratorium_value', 'quotation', 'open_date', 'maintenance', 'rate_name', 'rate_id')
 
 
 class OperationSerializer(serializers.ModelSerializer):
+    total = serializers.SerializerMethodField('calculate_total', read_only=True)
     future = serializers.SerializerMethodField('calculate_future_call', read_only=True)
 
     @staticmethod
@@ -61,15 +42,31 @@ class OperationSerializer(serializers.ModelSerializer):
         s = fo.calculate_operation_future(self)
         return s
 
+    @staticmethod
+    def calculate_total(self):
+        c = fo.calculate_total(self)
+        return c
+
     def create(self, validated_data):
-        bill = Bill.objects.get(id=validated_data["bill_id"])
-        validated_data["bill"] = bill
+        client = Client.objects.get(id=validated_data["client_id"])
+        validated_data["client"] = client
+        validated_data["operation_date"] = datetime.date.today()
         operation = Operation.objects.create(**validated_data)
+        maintenance_date_verify(operation)
         return operation
+
+    def update(self, instance, validated_data):
+        instance.state = validated_data.get('state', instance.state)
+        instance.balance = validated_data.get('balance', instance.balance)
+        if instance.state or instance.balance != 0:
+            instance.pay_date = datetime.date.today()
+        instance.save()
+        return instance
 
     class Meta:
         model = Operation
-        fields = ('operation_date', 'state', 'delivery', 'future', 'close')
+        fields = ('id', 'operation_date', 'state', 'delivery', 'future', 'time', 'balance', 'total',
+                  'maintenance', 'pay_date',)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -89,7 +86,6 @@ class OperationProductSerializer(serializers.ModelSerializer):
     unit_cost = serializers.FloatField(source='product.unit_cost', read_only=True)
     measurement = serializers.CharField(source='product.measurement', read_only=True)
     total = serializers.SerializerMethodField('calculate_total', read_only=True)
-    close = serializers.BooleanField(default=False, required=False, write_only=True)
 
     @staticmethod
     def calculate_total(self):
@@ -101,21 +97,15 @@ class OperationProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         operation = Operation.objects.get(id=validated_data["operation_id"])
-        if not operation.close:
-            product = Product.objects.get(id=validated_data["product_id"])
-            validated_data["product"] = product
-            validated_data["operation"] = operation
-            close = validated_data.pop('close')
-            operation_product = OperationProduct.objects.create(**validated_data)
-            operation.close = close
-            operation.save()
-            response = credit_validator(operation)
-            if isinstance(response, str):
-                return response
-            return operation_product
-        else:
-            return "The operation is already close"
+        product = Product.objects.get(id=validated_data["product_id"])
+        validated_data["product"] = product
+        validated_data["operation"] = operation
+        operation_product = OperationProduct.objects.create(**validated_data)
+        response = credit_validator(operation_product, operation)
+        if isinstance(response, str):
+            return response
+        return operation_product
 
     class Meta:
         model = OperationProduct
-        fields = ('id', 'product_name', 'unit_cost', 'quantity', 'measurement', 'total', 'close')
+        fields = ('id', 'product_name', 'unit_cost', 'quantity', 'measurement', 'total')

@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'otorongo_back_end.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'oto2',
+        'NAME': 'oto3',
         'USER': 'root',
         'PASSWORD': '19970924',
         'HOST': 'localhost',

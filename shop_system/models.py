@@ -22,10 +22,10 @@ class Client(models.Model):
     phone = models.CharField(max_length=15)
     address = models.CharField(max_length=90)
     credit_total = models.FloatField(default=0)
-    rate_value = models.FloatField()
+    compensatory_value = models.FloatField()
+    moratorium_value = models.FloatField(default=0)
     quotation = models.IntegerField(default=1)
-    billing_closing = models.DateField()
-    payday = models.DateField()
+    open_date = models.DateField(null=True)
     maintenance = models.FloatField()
     rate = models.ForeignKey(Rate, null=True, on_delete=models.SET(None))
 
@@ -33,20 +33,15 @@ class Client(models.Model):
         db_table = 'clients'
 
 
-class Bill(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    date = models.DateField()
-
-    class Meta:
-        db_table = 'bills'
-
-
 class Operation(models.Model):
-    bill = models.ForeignKey(Bill, on_delete=models.CASCADE)
-    operation_date = models.DateField()
-    state = models.BooleanField(default=0)
+    operation_date = models.DateField(null=True)
+    state = models.BooleanField(default=False)
     delivery = models.FloatField(default=0)
-    close = models.BooleanField(default=False)
+    maintenance = models.FloatField(default=0)
+    balance = models.FloatField(default=0)
+    pay_date = models.DateField(null=True)
+    time = models.IntegerField(default=30)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = 'operations'
