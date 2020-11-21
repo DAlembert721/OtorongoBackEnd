@@ -1,18 +1,17 @@
-from shop_system.models import Bill, Operation
-import shop_system.finance_operations as  fo
+import shop_system.finance_operations as fo
 import datetime
 
+from shop_system.models import Operation
 
-def bills_generator(clients):
-    for client in clients:
-        today = datetime.date.today()
-        date = datetime.date(today.year, today.month, client.billing_closing.day)
-        try:
-            Bill.objects.get(date=date)
-        except Bill.DoesNotExist:
-            bill = Bill(client=client, date=date)
-            bill.save()
-            continue
-        continue
-    return
 
+def maintenance_date_verify(operation):
+    if operation.operation_date.day == operation.client.open_date.day:
+        operation.maintenance = operation.client.maintenance
+        operation.save()
+
+
+def close_operations(client):
+    operations = Operation.objects.filter(client__id=client.id)
+    for operation in operations:
+        operation.close = True
+        operation.save()
