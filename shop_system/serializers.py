@@ -31,6 +31,7 @@ class ClientSerializer(serializers.ModelSerializer):
         instance.compensatory_value = validated_data.get('compensatory_value', instance.compensatory_value)
         instance.moratorium_value = validated_data.get('moratorium_value', instance.compensatory_value)
         instance.address = validated_data.get('address', instance.compensatory_value)
+        instance.credit_total = validated_data.get('credit_total', instance.credit_total)
         r_id = validated_data.get('rate_id', None)
         if r_id:
             rate = Rate.objects.get(id=validated_data["rate_id"])
