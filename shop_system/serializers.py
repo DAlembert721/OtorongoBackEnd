@@ -57,16 +57,18 @@ class OperationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.state = validated_data.get('state', instance.state)
-        instance.balance = validated_data.get('balance', instance.balance)
-        if instance.state or instance.balance != 0:
+        instance.payed = validated_data.get('payed', instance.payed)
+        if instance.state or instance.payed != 0:
             instance.pay_date = datetime.date.today()
+            t = calculate_operation_future(instance)
+            instance.balance = t - instance.payed
         instance.save()
         return instance
 
     class Meta:
         model = Operation
         fields = ('id', 'operation_date', 'state', 'delivery', 'future', 'time', 'balance', 'total',
-                  'maintenance', 'pay_date',)
+                  'maintenance', 'pay_date', 'payed',)
 
 
 class ProductSerializer(serializers.ModelSerializer):

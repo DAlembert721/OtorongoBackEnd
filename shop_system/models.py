@@ -44,6 +44,7 @@ class Operation(models.Model):
     pay_date = models.DateField(null=True)
     time = models.IntegerField(default=30)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True)
+    payed = models.FloatField(default=0)
 
     class Meta:
         db_table = 'operations'
