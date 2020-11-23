@@ -21,7 +21,7 @@ def futuro_a_tasa_compuesta(capital, tasa, tiempo_dias, cotizacion, deseado):
         te = ct.tasa_efectiva_a_tasa_efectiva(tasa, tiempo_dias)
         s = capital * (te + 1)
         print("El futuro a tasa efectiva es de: ", s)
-    return s
+    return round(s, 2)
 
 
 def calculo_tasa_efectiva(futuro, capital, deseado, tiempo_dias):

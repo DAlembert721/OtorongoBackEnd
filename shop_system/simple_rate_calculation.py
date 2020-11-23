@@ -10,7 +10,7 @@ def calculo_futuro_a_tasa_simple(capital, descuento, tiempo, tasa, tipo_tiempo):
     futuro = saldo * (1 + tasa * tiempo)
     # print("La tasa de interes anual es de:  ", tasa * 100)
     # print("El futuro a tasa simple es de: ", futuro)
-    return futuro
+    return round(futuro, 2)
 
 
 def calculo_tasa_interes(capital, descuento, tiempo, tipo_tiempo, futuro):

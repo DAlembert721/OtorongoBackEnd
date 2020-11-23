@@ -54,6 +54,6 @@ def calculate_total(operation):
     for product in products:
         item = Product.objects.get(id=product.product_id)
         unit_cost = item.unit_cost
-        mount = product.quantity * unit_cost
+        mount = round(product.quantity * unit_cost, 2)
         c += mount
     return c
