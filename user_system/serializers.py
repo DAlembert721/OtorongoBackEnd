@@ -40,6 +40,7 @@ class AccountSerializer(UserSerializer):
         instance.organization = validated_data.get('organization', instance.organization)
         instance.phone = validated_data.get('phone', instance.phone)
         instance.email = validated_data.get('email', instance.email)
+        instance.password = validated_data.get('password', instance.password)
         instance.save()
         return instance
 
