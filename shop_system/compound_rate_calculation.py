@@ -12,8 +12,8 @@ def futuro_a_tasa_compuesta(capital, tasa, tiempo_dias, cotizacion, deseado):
     }
     s = 0
     if deseado == 'Nominal':
-        m = switcher.get(tasa[1], 0) / switcher.get(cotizacion, 0)
-        n = tiempo_dias / switcher.get(cotizacion, 0)
+        m = switcher.get(tasa[1], tasa[1]) / switcher.get(cotizacion, cotizacion)
+        n = tiempo_dias / switcher.get(cotizacion, cotizacion)
         tn = tasa[0] / 100
         s = capital * (1 + tn / m) ** n
         print("El futuro a tasa nominal es de: ", s)
