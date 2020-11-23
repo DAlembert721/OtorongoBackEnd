@@ -18,11 +18,13 @@ def calculate_operation_future(operation):
         if operation.client.rate.type == 'Simple':
             rate = operation.client.moratorium_value
             future = sr.calculo_futuro_a_tasa_simple(c, 0, days_past, rate, 'exacto')
+
         else:
             rate = [operation.client.moratorium_value, operation.client.rate.name]
             future = cr.futuro_a_tasa_compuesta(c, rate, days_past, operation.client.quotation,
                                                 operation.client.rate.type)
-    future -= round(c, 2)
+        future -= round(c, 2)
+
     if operation.client.rate.type == 'Simple':
         rate = operation.client.compensatory_value
         future += sr.calculo_futuro_a_tasa_simple(c, 0, time, rate, 'exacto')
