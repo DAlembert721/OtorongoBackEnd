@@ -60,7 +60,7 @@ def accounts_list(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def account_detail(request, account_id):
     try:
@@ -80,6 +80,12 @@ def account_detail(request, account_id):
     elif request.method == 'DELETE':
         account.delete()
         return Response(status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        serializer = AccountSerializer(account, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])

@@ -27,6 +27,17 @@ class ClientSerializer(serializers.ModelSerializer):
         client = Client.objects.create(**validated_data)
         return client
 
+    def update(self, instance, validated_data):
+        instance.compensatory_value = validated_data.get('compensatory_value', instance.compensatory_value)
+        instance.moratorium_value = validated_data.get('moratorium_value', instance.compensatory_value)
+        instance.address = validated_data.get('address', instance.compensatory_value)
+        r_id = validated_data.get('rate_id', None)
+        if r_id:
+            rate = Rate.objects.get(id=validated_data["rate_id"])
+            instance.rate = rate
+        instance.save()
+        return instance
+
     class Meta:
         model = Client
         fields = ('id', 'last_name', 'first_name', 'email', 'currency', 'dni', 'phone', 'address', 'credit_total', 'compensatory_value',

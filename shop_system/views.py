@@ -35,7 +35,7 @@ def account_clients_list(request, account_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'PUT', 'DELETE', 'PATCH'])
 def account_clients_detail(request, account_id, client_id):
     try:
         Account.objects.get(id=account_id)
@@ -59,6 +59,12 @@ def account_clients_detail(request, account_id, client_id):
     elif request.method == 'DELETE':
         client.delete()
         return Response(status=status.HTTP_200_OK)
+    elif request.method == 'PATCH':
+        serializer = ClientSerializer(client, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])

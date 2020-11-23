@@ -35,6 +35,13 @@ class AccountSerializer(UserSerializer):
         account = Account.objects.create(**validated_data)
         return account
 
+    def update(self, instance, validated_data):
+        instance.address = validated_data.get('address', instance.address)
+        instance.organization = validated_data.get('organization', instance.organization)
+        instance.phone = validated_data.get('phone', instance.phone)
+        instance.save()
+        return instance
+
     class Meta:
         model = Account
         fields = UserSerializer.Meta.fields + ('first_name', 'last_name', 'dni', 'phone', 'address', 'organization'

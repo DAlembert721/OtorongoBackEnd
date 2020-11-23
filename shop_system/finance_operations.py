@@ -31,7 +31,7 @@ def calculate_operation_future(operation):
         rate = [operation.client.compensatory_value, operation.client.rate.name]
         future += cr.futuro_a_tasa_compuesta(c, rate, time, operation.client.quotation,
                                              operation.client.rate.type)
-    return future + operation.maintenance
+    return round(future, 2) + round(operation.maintenance, 2)
 
 
 def credit_validator(operation_product, operation):
