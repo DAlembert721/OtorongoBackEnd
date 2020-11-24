@@ -69,11 +69,12 @@ class OperationSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.state = validated_data.get('state', instance.state)
-        instance.payed = validated_data.get('payed', instance.payed)
-        if instance.state or instance.payed != 0:
+        pay = validated_data.get('payed', 0)
+        if instance.state or pay > 0:
             instance.pay_date = datetime.date.today()
             t = calculate_operation_future(instance)
-            instance.balance = round(t - instance.payed, 2)
+            instance.balance = round(t - pay, 2)
+            instance.payed += pay
             if instance.balance == 0:
                 instance.state = True
         instance.save()
