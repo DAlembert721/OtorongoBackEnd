@@ -10,7 +10,7 @@ def calculate_operation_future(operation):
     days_past = time - operation.time
     if operation.balance != 0:
         c = operation.balance
-        time = today - operation.pay_date
+        time = (today - operation.pay_date).days
     else:
         c = calculate_total(operation)
     future = 0
