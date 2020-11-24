@@ -5,14 +5,14 @@ from shop_system.models import Operation, OperationProduct, Product
 
 
 def calculate_operation_future(operation):
-    if operation.balance != 0:
-        c = operation.balance
-    else:
-        c = calculate_total(operation)
-
     today = datetime.date.today()
     time = (today - operation.operation_date).days
     days_past = time - operation.time
+    if operation.balance != 0:
+        c = operation.balance
+        time = today - operation.pay_date
+    else:
+        c = calculate_total(operation)
     future = 0
     if days_past > 0:
         if operation.client.rate.type == 'Simple':
