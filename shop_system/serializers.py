@@ -73,7 +73,7 @@ class OperationSerializer(serializers.ModelSerializer):
         if instance.state or instance.payed != 0:
             instance.pay_date = datetime.date.today()
             t = calculate_operation_future(instance)
-            instance.balance = t - instance.payed
+            instance.balance = round(t - instance.payed, 2)
         instance.save()
         return instance
 
